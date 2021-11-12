@@ -19,7 +19,10 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"sync"
+	"time"
 )
 
 // SessionManager keeps track of all sessions from creation, updating
@@ -72,6 +75,9 @@ func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{
 
 // UpdateSessionData overwrites the old session data with the new one
 func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]interface{}) error {
+	var mu sync.Mutex
+	mu.Lock()
+	defer mu.Unlock()
 	_, ok := m.sessions[sessionID]
 	if !ok {
 		return ErrSessionNotFound
@@ -81,6 +87,17 @@ func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]int
 	m.sessions[sessionID] = Session{
 		Data: data,
 	}
+	
+	go func(data map[string]interface{}) {
+		time.Sleep(time.Second*5)
+		fmt.Println("TEST")
+		if fmt.Sprint(data) == fmt.Sprint(m.sessions[sessionID].Data) {
+			m.sessions[sessionID] = Session{
+				Data: nil,
+			}
+		} 
+		
+	}(data)
 
 	return nil
 }
