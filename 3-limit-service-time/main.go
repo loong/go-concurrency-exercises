@@ -26,17 +26,20 @@ type User struct {
 // HandleRequest runs the processes requested by users. Returns false
 // if process had to be killed
 func HandleRequest(process func(), u *User) bool {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*1)
-	go func() {
-		for{
-			select{
-			case <-ctx.Done():
-				return 
-			}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+	defer cancel()
+	
+	process()
+	
+	return func() bool {
+		select{
+		case <- ctx.Done():
+			return false
+
+		default:
+			return true
 		}
 	} ()
-	process()
-	return true
 }
 
 func main() {
