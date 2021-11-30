@@ -21,7 +21,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"sync"
 	"time"
 )
 
@@ -36,7 +35,6 @@ type SessionManager struct {
 type Session struct {
 	Data map[string]interface{}
 	isUpdate chan struct{}
-	sync.Mutex
 }
 
 // NewSessionManager creates a new sessionManager
@@ -50,6 +48,7 @@ func NewSessionManager() *SessionManager {
 
 // CreateSession creates a new session and returns the sessionID
 func (m *SessionManager) CreateSession() (string, error) {
+	
 	sessionID, err := MakeSessionID()
 	if err != nil {
 		return "", err
@@ -94,9 +93,6 @@ func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{
 
 // UpdateSessionData overwrites the old session data with the new one
 func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]interface{}) error {
-	var mu sync.Mutex
-	mu.Lock()
-	defer mu.Unlock()
 	_, ok := m.sessions[sessionID]
 	if !ok {
 		return ErrSessionNotFound
