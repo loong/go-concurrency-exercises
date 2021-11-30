@@ -18,8 +18,8 @@
 package main
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -31,9 +31,12 @@ type SessionManager struct {
 	sessions map[string]Session
 }
 
+
 // Session stores the session's data
 type Session struct {
 	Data map[string]interface{}
+	isUpdate chan struct{}
+	sync.Mutex
 }
 
 // NewSessionManager creates a new sessionManager
@@ -52,9 +55,25 @@ func (m *SessionManager) CreateSession() (string, error) {
 		return "", err
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+
 	m.sessions[sessionID] = Session{
 		Data: make(map[string]interface{}),
+		isUpdate: make(chan struct{}, 1),
 	}
+
+	go func() {
+		defer cancel()
+		
+		for {
+			select {
+			case <-ctx.Done():
+				delete(m.sessions, sessionID)
+			case <- m.sessions[sessionID].isUpdate:
+				ctx, cancel = context.WithTimeout(context.Background(), time.Second*5)
+			}
+		}
+	}()
 
 	return sessionID, nil
 }
@@ -83,21 +102,12 @@ func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]int
 		return ErrSessionNotFound
 	}
 
+	m.sessions[sessionID].isUpdate <- struct{}{}
 	// Hint: you should renew expiry of the session here
 	m.sessions[sessionID] = Session{
 		Data: data,
+		isUpdate: make(chan struct{}, 1),
 	}
-	
-	go func(data map[string]interface{}) {
-		time.Sleep(time.Second*5)
-		fmt.Println("TEST")
-		if fmt.Sprint(data) == fmt.Sprint(m.sessions[sessionID].Data) {
-			m.sessions[sessionID] = Session{
-				Data: nil,
-			}
-		} 
-		
-	}(data)
 
 	return nil
 }
