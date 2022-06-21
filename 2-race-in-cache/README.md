@@ -2,7 +2,7 @@
 
 Given is some code to cache key-value pairs from a mock database into
 the main memory (to reduce access time). The code is buggy and
-contains a race conditition. Change the code to make this thread safe.
+contains a race condition. Change the code to make this thread safe.
 
 Also, try to get your solution down to less than 30 seconds to run tests.  *Hint*: fetching from the database takes the longest.
 
