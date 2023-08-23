@@ -8,7 +8,10 @@
 
 package main
 
-import "container/list"
+import (
+	"container/list"
+	"sync"
+)
 
 // CacheSize determines how big the cache can grow
 const CacheSize = 100
@@ -29,6 +32,7 @@ type KeyStoreCache struct {
 	cache map[string]*list.Element
 	pages list.List
 	load  func(string) string
+	lock  sync.Locker
 }
 
 // New creates a new KeyStoreCache
@@ -36,11 +40,22 @@ func New(load KeyStoreCacheLoader) *KeyStoreCache {
 	return &KeyStoreCache{
 		load:  load.Load,
 		cache: make(map[string]*list.Element),
+		lock:  new(sync.Mutex),
 	}
 }
 
 // Get gets the key from cache, loads it from the source if needed
 func (k *KeyStoreCache) Get(key string) string {
+	// Attempt a first retrieval
+	if e, ok := k.cache[key]; ok {
+		k.pages.MoveToFront(e)
+		return e.Value.(page).Value
+	} else {
+		// A writing operation may be required.
+		k.lock.Lock()
+		defer k.lock.Unlock()
+	}
+	// Check again in case the key has already been added after locking
 	if e, ok := k.cache[key]; ok {
 		k.pages.MoveToFront(e)
 		return e.Value.(page).Value

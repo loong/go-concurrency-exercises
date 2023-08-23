@@ -13,10 +13,39 @@
 
 package main
 
+import (
+	"os"
+	"os/signal"
+	"syscall"
+)
+
 func main() {
+	signalsChannel := make(chan os.Signal, 1)
+	signal.Notify(signalsChannel, syscall.SIGINT)
+	done := make(chan bool)
 	// Create a process
 	proc := MockProcess{}
 
 	// Run the process (blocking)
-	proc.Run()
+	go func() {
+		proc.Run()
+		done <- true
+	}()
+
+	signalAlreadyReceived := false
+	for {
+		select {
+		case <-done:
+			return
+		case <-signalsChannel:
+			if signalAlreadyReceived {
+				os.Exit(130)
+			}
+			signalAlreadyReceived = true
+			go func() {
+				proc.Stop()
+				os.Exit(0)
+			}()
+		}
+	}
 }
