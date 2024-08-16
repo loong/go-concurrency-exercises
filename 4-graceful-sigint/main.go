@@ -13,10 +13,35 @@
 
 package main
 
+import (
+	"log"
+	"os"
+	"os/signal"
+	"time"
+)
+
 func main() {
 	// Create a process
 	proc := MockProcess{}
 
 	// Run the process (blocking)
-	proc.Run()
+	go proc.Run()
+
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt)
+
+	sig := <-c
+	log.Printf("captured sigint %v, stopping application and exiting...", sig)
+	go proc.Stop()
+
+	// Wait for either graceful stop or second SIGINT
+	select {
+	case <-time.After(10 * time.Second):
+		log.Println("Graceful shutdown completed.")
+	case sig := <-c:
+		log.Printf("Captured %v again, forcing shutdown...", sig)
+	}
+
+	os.Exit(0)
+
 }
