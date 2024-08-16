@@ -9,40 +9,56 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"sync"
 	"time"
 )
 
-func producer(stream Stream) (tweets []*Tweet) {
+func producer(stream Stream, ch chan *Tweet) {
 	for {
 		tweet, err := stream.Next()
 		if err == ErrEOF {
-			return tweets
+			close(ch)
+			return
 		}
 
-		tweets = append(tweets, tweet)
+		ch <- tweet
 	}
 }
 
-func consumer(tweets []*Tweet) {
-	for _, t := range tweets {
+func consumer(ch chan *Tweet, output *bytes.Buffer, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for t := range ch {
 		if t.IsTalkingAboutGo() {
-			fmt.Println(t.Username, "\ttweets about golang")
+			fmt.Fprintln(output, t.Username, "\ttweets about golang")
 		} else {
-			fmt.Println(t.Username, "\tdoes not tweet about golang")
+			fmt.Fprintln(output, t.Username, "\tdoes not tweet about golang")
 		}
 	}
+}
+
+func processStream(stream Stream) string {
+	start := time.Now()
+	var output bytes.Buffer
+	var wg sync.WaitGroup
+
+	ch := make(chan *Tweet)
+
+	// Producer
+	go producer(stream, ch)
+
+	// Consumer
+	wg.Add(1)
+	go consumer(ch, &output, &wg)
+	wg.Wait()
+
+	fmt.Fprintf(&output, "Process took %s\n", time.Since(start))
+	return output.String()
 }
 
 func main() {
-	start := time.Now()
 	stream := GetMockStream()
-
-	// Producer
-	tweets := producer(stream)
-
-	// Consumer
-	consumer(tweets)
-
-	fmt.Printf("Process took %s\n", time.Since(start))
+	result := processStream(stream)
+	fmt.Println(result)
 }
