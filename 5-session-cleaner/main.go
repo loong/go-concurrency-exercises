@@ -20,17 +20,21 @@ package main
 import (
 	"errors"
 	"log"
+	"sync"
+	"time"
 )
 
 // SessionManager keeps track of all sessions from creation, updating
 // to destroying.
 type SessionManager struct {
 	sessions map[string]Session
+	mux      sync.Mutex
 }
 
 // Session stores the session's data
 type Session struct {
-	Data map[string]interface{}
+	Data        map[string]interface{}
+	lastUpdated time.Time
 }
 
 // NewSessionManager creates a new sessionManager
@@ -38,19 +42,33 @@ func NewSessionManager() *SessionManager {
 	m := &SessionManager{
 		sessions: make(map[string]Session),
 	}
-
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+			m.mux.Lock()
+			for sessionID, session := range m.sessions {
+				if time.Since(session.lastUpdated) > time.Duration(time.Second*5) {
+					delete(m.sessions, sessionID)
+				}
+			}
+			m.mux.Unlock()
+		}
+	}()
 	return m
 }
 
 // CreateSession creates a new session and returns the sessionID
 func (m *SessionManager) CreateSession() (string, error) {
+	m.mux.Lock()
+	defer m.mux.Unlock()
 	sessionID, err := MakeSessionID()
 	if err != nil {
 		return "", err
 	}
 
 	m.sessions[sessionID] = Session{
-		Data: make(map[string]interface{}),
+		Data:        make(map[string]interface{}),
+		lastUpdated: time.Now(),
 	}
 
 	return sessionID, nil
@@ -63,6 +81,8 @@ var ErrSessionNotFound = errors.New("SessionID does not exists")
 // GetSessionData returns data related to session if sessionID is
 // found, errors otherwise
 func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{}, error) {
+	m.mux.Lock()
+	defer m.mux.Unlock()
 	session, ok := m.sessions[sessionID]
 	if !ok {
 		return nil, ErrSessionNotFound
@@ -77,9 +97,12 @@ func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]int
 		return ErrSessionNotFound
 	}
 
+	m.mux.Lock()
+	defer m.mux.Unlock()
 	// Hint: you should renew expiry of the session here
 	m.sessions[sessionID] = Session{
-		Data: data,
+		Data:        data,
+		lastUpdated: time.Now(),
 	}
 
 	return nil

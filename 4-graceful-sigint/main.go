@@ -13,10 +13,32 @@
 
 package main
 
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
 func main() {
 	// Create a process
 	proc := MockProcess{}
+	done := make(chan bool)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT)
 
 	// Run the process (blocking)
-	proc.Run()
+	go proc.Run()
+	<-sig
+	go func() {
+		proc.Stop()
+		done <- true
+	}()
+	// stop never actually returns from the mockprocess, so done never gets sent a signal - this handles the case of a process actually stopping
+	select {
+	case <-sig:
+		fmt.Println("aborting clean shutdown...")
+	case <-done:
+		fmt.Println("exiting cleanly...")
+	}
 }
