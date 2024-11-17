@@ -13,10 +13,44 @@
 
 package main
 
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
 func main() {
+
+	sigsStop := make(chan os.Signal, 1)
+
+	done := make(chan bool, 1)
+
+	signal.Notify(sigsStop, syscall.SIGINT, syscall.SIGTERM)
+
 	// Create a process
 	proc := MockProcess{}
 
+	go func() {
+		sigStop := <-sigsStop
+		fmt.Println("\nПолучен сигнал:", sigStop)
+		go func() {
+			proc.Stop()
+		}()
+		fmt.Println("Выполняем корректное завершение работы...")
+		time.Sleep(2 * time.Second) // имитация завершения задач
+
+		done <- true
+
+	}()
+
+	go func() {
+		<-done
+		fmt.Println("\nПрограмма завершена.")
+	}()
 	// Run the process (blocking)
+	fmt.Println("Программа запущена. Нажмите Ctrl+C для завершения.")
 	proc.Run()
+
 }
