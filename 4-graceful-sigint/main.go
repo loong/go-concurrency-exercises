@@ -22,35 +22,29 @@ import (
 )
 
 func main() {
-
-	sigsStop := make(chan os.Signal, 1)
-
-	done := make(chan bool, 1)
+	sigsStop := make(chan os.Signal)
 
 	signal.Notify(sigsStop, syscall.SIGINT, syscall.SIGTERM)
 
 	// Create a process
 	proc := MockProcess{}
 
-	go func() {
-		sigStop := <-sigsStop
-		fmt.Println("\nПолучен сигнал:", sigStop)
-		go func() {
-			proc.Stop()
-		}()
-		fmt.Println("Выполняем корректное завершение работы...")
-		time.Sleep(2 * time.Second) // имитация завершения задач
+	fmt.Println("The program is running. Press Ctrl+C to complete.")
 
-		done <- true
-
-	}()
-
-	go func() {
-		<-done
-		fmt.Println("\nПрограмма завершена.")
-	}()
 	// Run the process (blocking)
-	fmt.Println("Программа запущена. Нажмите Ctrl+C для завершения.")
-	proc.Run()
+	go proc.Run()
+	sigStop := <-sigsStop
+	fmt.Printf("\nA signal has been received: %v.\n", sigStop)
 
+	go proc.Stop()
+	fmt.Println("We are completing the work correctly...")
+
+	select {
+	case <-time.After(5 * time.Second):
+		fmt.Println("\nThe correct shutdown has been completed.")
+	case sigStop = <-sigsStop:
+		fmt.Printf("\nA signal has been received: %v. Early termination of work.", sigStop)
+	}
+
+	os.Exit(0)
 }
