@@ -1,4 +1,4 @@
-module github.com/nathanverse/go-concurrency-exercises
+module vu/benchmark/queue
 
 go 1.24.2
 

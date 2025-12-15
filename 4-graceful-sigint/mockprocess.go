@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 //
 // DO NOT EDIT THIS PART
-// Your task is to edit `main.go`
+// Your task is to edit `base.go`
 //
 
 package main
@@ -15,7 +15,7 @@ import (
 
 // MockProcess for example
 type MockProcess struct {
-	mu sync.Mutex
+	mu        sync.Mutex
 	isRunning bool
 }
 

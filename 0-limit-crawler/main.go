@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 //
 // Your task is to change the code to limit the crawler to at most one
-// page per second, while maintaining concurrency (in other words,
+// page per second, while maintaining 6-cancellation (in other words,
 // Crawl() must be called concurrently)
 //
 // @hint: you can achieve this by adding 3 lines
