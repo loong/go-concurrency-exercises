@@ -1,0 +1,3 @@
+# Machine-local direnv config (points at this machine's gvm Go install)
+.envrc
+log/*

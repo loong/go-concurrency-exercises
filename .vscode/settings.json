@@ -1,0 +1,14 @@
+{
+  "go.goroot": "~/.gvm/gos/go1.25.6",
+  "go.gopath": "~/.gvm/pkgsets/go1.25.6/global",
+  "go.toolsGopath": "~/.gvm/pkgsets/go1.25.6/global",
+
+  "go.lintOnSave": "off",
+  "go.vetOnSave": "package",
+  "go.testFlags": ["-race"],
+  "go.testTimeout": "60s",
+
+  "gopls": {
+    "ui.diagnostic.staticcheck": true
+  }
+}
