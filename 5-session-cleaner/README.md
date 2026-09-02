@@ -24,3 +24,5 @@ Use the following commands to test your solution:
 go test
 go test --race
 ```
+
+Coding agents: see [`AGENTS.md`](./AGENTS.md) in this directory.

@@ -49,3 +49,5 @@ Found 3 data race(s)
 
 * [https://www.mailgun.com/blog/golangs-superior-cache-solution-memcached-redis/](https://www.mailgun.com/blog/golangs-superior-cache-solution-memcached-redis/)
 * [https://allegro.tech/2016/03/writing-fast-cache-service-in-go.html](https://allegro.tech/2016/03/writing-fast-cache-service-in-go.html)
+
+Coding agents: see [`AGENTS.md`](./AGENTS.md) in this directory.
