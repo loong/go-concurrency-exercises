@@ -1,0 +1,102 @@
+{
+  "name": "go-concurrency-exercises",
+  "description": "Hands-on Go concurrency workshop. Starter main.go files are unsolved on purpose.",
+  "module": "github.com/loong/go-concurrency-exercises",
+  "go": "1.19",
+  "license": "WTFPL",
+  "author": "Long Hoang",
+  "homepage": "https://github.com/loong/go-concurrency-exercises",
+  "agents": {
+    "instructions": "AGENTS.md",
+    "llms": "llms.txt",
+    "skills": [
+      ".agents/skills/take-exercise",
+      ".agents/skills/maintain-exercises"
+    ]
+  },
+  "rules": {
+    "learnerMayEdit": ["main.go"],
+    "doNotEdit": ["*_test.go", "mock*.go", "helper.go"],
+    "spoilers": "Do not paste a complete solution unless the user explicitly asks to solve it."
+  },
+  "exercises": [
+    {
+      "id": 0,
+      "slug": "0-limit-crawler",
+      "title": "Limit your crawler",
+      "path": "0-limit-crawler",
+      "goal": "Limit concurrent crawls to at most one page per second while still calling Crawl() concurrently.",
+      "edit": ["0-limit-crawler/main.go"],
+      "frozen": ["0-limit-crawler/mockfetcher.go", "0-limit-crawler/check_test.go"],
+      "verify": ["go test"],
+      "primitives": ["time.Ticker", "time.NewTicker", "golang.org/x/time/rate"],
+      "readme": "0-limit-crawler/README.md",
+      "agents": "0-limit-crawler/AGENTS.md"
+    },
+    {
+      "id": 1,
+      "slug": "1-producer-consumer",
+      "title": "Producer-consumer",
+      "path": "1-producer-consumer",
+      "goal": "Run the tweet producer and consumer concurrently so total runtime is about 2s instead of about 3.5s.",
+      "edit": ["1-producer-consumer/main.go"],
+      "frozen": ["1-producer-consumer/mockstream.go"],
+      "verify": ["go run ."],
+      "primitives": ["chan", "goroutine", "close"],
+      "readme": "1-producer-consumer/README.md",
+      "agents": "1-producer-consumer/AGENTS.md"
+    },
+    {
+      "id": 2,
+      "slug": "2-race-in-cache",
+      "title": "Race condition in cache",
+      "path": "2-race-in-cache",
+      "goal": "Make the in-memory LRU cache thread-safe. Aim for tests under 30s, ideally under 5s.",
+      "edit": ["2-race-in-cache/main.go"],
+      "frozen": ["2-race-in-cache/mockdb.go", "2-race-in-cache/mockserver.go", "2-race-in-cache/check_test.go"],
+      "verify": ["go test -race"],
+      "primitives": ["sync.Mutex", "sync.RWMutex"],
+      "readme": "2-race-in-cache/README.md",
+      "agents": "2-race-in-cache/AGENTS.md"
+    },
+    {
+      "id": 3,
+      "slug": "3-limit-service-time",
+      "title": "Limit service time for free-tier users",
+      "path": "3-limit-service-time",
+      "goal": "Beginner: kill a free-tier request after 10s. Advanced: accumulate 10s of processing time per free-tier user.",
+      "edit": ["3-limit-service-time/main.go"],
+      "frozen": ["3-limit-service-time/mockserver.go"],
+      "verify": ["go run ."],
+      "primitives": ["time.After", "context.WithTimeout", "select", "time.Since"],
+      "readme": "3-limit-service-time/README.md",
+      "agents": "3-limit-service-time/AGENTS.md"
+    },
+    {
+      "id": 4,
+      "slug": "4-graceful-sigint",
+      "title": "Graceful SIGINT killing",
+      "path": "4-graceful-sigint",
+      "goal": "First SIGINT calls proc.Stop(). A second SIGINT exits immediately.",
+      "edit": ["4-graceful-sigint/main.go"],
+      "frozen": ["4-graceful-sigint/mockprocess.go"],
+      "verify": ["go run ."],
+      "primitives": ["os/signal", "signal.Notify", "syscall.SIGINT"],
+      "readme": "4-graceful-sigint/README.md",
+      "agents": "4-graceful-sigint/AGENTS.md"
+    },
+    {
+      "id": 5,
+      "slug": "5-session-cleaner",
+      "title": "Clean inactive sessions",
+      "path": "5-session-cleaner",
+      "goal": "Background cleaner removes sessions idle for more than 5 seconds (gone by 7 seconds) without data races.",
+      "edit": ["5-session-cleaner/main.go"],
+      "frozen": ["5-session-cleaner/helper.go", "5-session-cleaner/check_test.go"],
+      "verify": ["go test", "go test -race"],
+      "primitives": ["time.Ticker", "sync.Mutex", "sync.RWMutex"],
+      "readme": "5-session-cleaner/README.md",
+      "agents": "5-session-cleaner/AGENTS.md"
+    }
+  ]
+}

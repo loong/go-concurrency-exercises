@@ -7,3 +7,5 @@ Change the program to do the following:
    1. On SIGINT try to gracefully stop the process using
           `proc.Stop()`
    2. If SIGINT is called again, just kill the program (last resort)
+
+Coding agents: see [`AGENTS.md`](./AGENTS.md) in this directory.

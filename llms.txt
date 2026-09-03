@@ -1,0 +1,26 @@
+# Go Concurrency Exercises
+
+> Hands-on Go concurrency workshop with real-life scenarios and test cases. Starter `main.go` files are unsolved on purpose. Learners edit only `main.go`.
+
+Module: `github.com/loong/go-concurrency-exercises`. Covers goroutines, channels, mutexes, rate limiting, `select`, `context`, graceful shutdown, and session cleanup. Coding agents should read `AGENTS.md` first and must not dump full solutions unless the user explicitly asks.
+
+## Agent instructions
+
+- [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/AGENTS.md): How coding agents should coach learners and maintain this repo
+- [exercises.json](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/exercises.json): Machine-readable exercise catalog
+- [take-exercise skill](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/.agents/skills/take-exercise/SKILL.md): Coach a learner through an exercise without spoiling it
+- [maintain-exercises skill](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/.agents/skills/maintain-exercises/SKILL.md): Add or update exercises without committing solutions
+
+## Exercises
+
+- [0 Limit your crawler](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/0-limit-crawler/README.md): Rate-limit concurrent page crawls to at most one fetch per second. Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/0-limit-crawler/AGENTS.md)
+- [1 Producer-consumer](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/1-producer-consumer/README.md): Run tweet producer and consumer concurrently to cut runtime roughly in half. Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/1-producer-consumer/AGENTS.md)
+- [2 Race condition in cache](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/2-race-in-cache/README.md): Make an in-memory LRU cache thread-safe and fast. Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/2-race-in-cache/AGENTS.md)
+- [3 Limit service time](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/3-limit-service-time/README.md): Kill free-tier video processing after 10 seconds (per request, then accumulated per user). Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/3-limit-service-time/AGENTS.md)
+- [4 Graceful SIGINT](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/4-graceful-sigint/README.md): First Ctrl-C calls `proc.Stop()`; a second SIGINT kills the process. Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/4-graceful-sigint/AGENTS.md)
+- [5 Session cleaner](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/5-session-cleaner/README.md): Background goroutine deletes sessions idle for more than 5 seconds without races. Agent notes: [AGENTS.md](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/5-session-cleaner/AGENTS.md)
+
+## Optional
+
+- [Human README](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/README.md): How humans take the challenge
+- [Go module](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/go.mod): `go 1.19`, module path `github.com/loong/go-concurrency-exercises`
