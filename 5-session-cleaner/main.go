@@ -20,23 +20,28 @@ package main
 import (
 	"errors"
 	"log"
+	"sync"
+	"time"
 )
 
 // SessionManager keeps track of all sessions from creation, updating
 // to destroying.
 type SessionManager struct {
 	sessions map[string]Session
+	mu       *sync.RWMutex
 }
 
 // Session stores the session's data
 type Session struct {
-	Data map[string]interface{}
+	Data           map[string]interface{}
+	ActiveStatusCh chan struct{}
 }
 
 // NewSessionManager creates a new sessionManager
 func NewSessionManager() *SessionManager {
 	m := &SessionManager{
 		sessions: make(map[string]Session),
+		mu:       &sync.RWMutex{},
 	}
 
 	return m
@@ -50,8 +55,25 @@ func (m *SessionManager) CreateSession() (string, error) {
 	}
 
 	m.sessions[sessionID] = Session{
-		Data: make(map[string]interface{}),
+		Data:           make(map[string]interface{}),
+		ActiveStatusCh: make(chan struct{}),
 	}
+
+	go func() {
+
+		for {
+			select {
+			case <-time.After(5 * time.Second):
+				m.mu.Lock()
+				delete(m.sessions, sessionID)
+				m.mu.Unlock()
+				return
+			case <-m.sessions[sessionID].ActiveStatusCh:
+				continue
+			}
+		}
+
+	}()
 
 	return sessionID, nil
 }
@@ -63,7 +85,18 @@ var ErrSessionNotFound = errors.New("SessionID does not exists")
 // GetSessionData returns data related to session if sessionID is
 // found, errors otherwise
 func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{}, error) {
-	session, ok := m.sessions[sessionID]
+	session, ok := Session{}, false
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		m.mu.RLock()
+		defer m.mu.RUnlock()
+		session, ok = m.sessions[sessionID]
+	}()
+
+	wg.Wait()
+
 	if !ok {
 		return nil, ErrSessionNotFound
 	}
@@ -72,15 +105,37 @@ func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{
 
 // UpdateSessionData overwrites the old session data with the new one
 func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]interface{}) error {
-	_, ok := m.sessions[sessionID]
+	ok := false
+	wg := &sync.WaitGroup{}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		m.mu.RLock()
+		defer m.mu.RUnlock()
+		_, ok = m.sessions[sessionID]
+	}()
+
+	wg.Wait()
+
 	if !ok {
 		return ErrSessionNotFound
 	}
 
 	// Hint: you should renew expiry of the session here
-	m.sessions[sessionID] = Session{
-		Data: data,
-	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		m.sessions[sessionID].ActiveStatusCh <- struct{}{}
+		m.sessions[sessionID] = Session{
+			Data: data,
+		}
+
+	}()
+
+	wg.Wait()
 
 	return nil
 }
@@ -98,6 +153,8 @@ func main() {
 	// Update session data
 	data := make(map[string]interface{})
 	data["website"] = "longhoang.de"
+
+	//time.Sleep(5 * time.Second)
 
 	err = m.UpdateSessionData(sID, data)
 	if err != nil {

@@ -13,10 +13,38 @@
 
 package main
 
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
 func main() {
+	sigsStop := make(chan os.Signal)
+
+	signal.Notify(sigsStop, syscall.SIGINT, syscall.SIGTERM)
+
 	// Create a process
 	proc := MockProcess{}
 
+	fmt.Println("The program is running. Press Ctrl+C to complete.")
+
 	// Run the process (blocking)
-	proc.Run()
+	go proc.Run()
+	sigStop := <-sigsStop
+	fmt.Printf("\nA signal has been received: %v.\n", sigStop)
+
+	go proc.Stop()
+	fmt.Println("We are completing the work correctly...")
+
+	select {
+	case <-time.After(5 * time.Second):
+		fmt.Println("\nThe correct shutdown has been completed.")
+	case sigStop = <-sigsStop:
+		fmt.Printf("\nA signal has been received: %v. Early termination of work.", sigStop)
+	}
+
+	os.Exit(0)
 }
