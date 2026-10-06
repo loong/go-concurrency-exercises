@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 //
 // DO NOT EDIT THIS PART
-// Your task is to edit `main.go`
+// Your task is to edit `base.go`
 //
 
 package main
@@ -31,7 +31,7 @@ func RunMockServer(cache *KeyStoreCache, t *testing.T) {
 				go func(i int) {
 					value := cache.Get("Test" + strconv.Itoa(i))
 					if t != nil {
-						if value != "Test" + strconv.Itoa(i) {
+						if value != "Test"+strconv.Itoa(i) {
 							t.Errorf("Incorrect db response %v", value)
 						}
 					}

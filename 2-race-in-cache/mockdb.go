@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 //
 // DO NOT EDIT THIS PART
-// Your task is to edit `main.go`
+// Your task is to edit `base.go`
 //
 
 package main
@@ -12,7 +12,7 @@ import (
 )
 
 // MockDB used to simulate a database model
-type MockDB struct{
+type MockDB struct {
 	Calls int32
 }
 

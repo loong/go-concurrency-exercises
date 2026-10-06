@@ -1,0 +1,15 @@
+2025/12/15 15:13:16 profile: cpu profiling enabled, cpu.pprof
+2025/12/15 15:13:18 profile: cpu profiling disabled, cpu.pprof
+goos: darwin
+goarch: arm64
+pkg: vu/benchmark/queue
+cpu: Apple M2
+BenchmarkQueueHashFixedIterations-8   	2025/12/15 15:13:18 profile: cpu profiling enabled, cpu.pprof
+2025/12/15 15:13:20 profile: cpu profiling disabled, cpu.pprof
+2025/12/15 15:13:20 profile: cpu profiling enabled, cpu.pprof
+2025/12/15 15:13:22 profile: cpu profiling disabled, cpu.pprof
+2025/12/15 15:13:22 profile: cpu profiling enabled, cpu.pprof
+2025/12/15 15:13:24 profile: cpu profiling disabled, cpu.pprof
+       4	 253199010 ns/op
+PASS
+ok  	vu/benchmark/queue	8.583s

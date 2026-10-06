@@ -1,0 +1,9 @@
+goos: darwin
+goarch: arm64
+pkg: vu/benchmark/queue
+cpu: Apple M2
+BenchmarkQueueHashFixedIterations-8   	       4	 265989531 ns/op
+BenchmarkQueueHashFixedIterations-8   	       4	 254028333 ns/op
+BenchmarkQueueHashFixedIterations-8   	       4	 255124583 ns/op
+PASS
+ok  	vu/benchmark/queue	23.775s
