@@ -32,7 +32,7 @@ Read `exercises.json` for the machine-readable catalog. Per-exercise details liv
 
 ## Commands
 
-Need Go 1.19+. Run tests from the exercise directory, not the repo root.
+Need Go 1.27+. Run tests from the exercise directory, not the repo root.
 
 ```bash
 cd 0-limit-crawler && go test

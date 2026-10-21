@@ -2,7 +2,7 @@
   "name": "go-concurrency-exercises",
   "description": "Hands-on Go concurrency workshop. Starter main.go files are unsolved on purpose.",
   "module": "github.com/loong/go-concurrency-exercises",
-  "go": "1.19",
+  "go": "1.27",
   "license": "WTFPL",
   "author": "Long Hoang",
   "homepage": "https://github.com/loong/go-concurrency-exercises",
