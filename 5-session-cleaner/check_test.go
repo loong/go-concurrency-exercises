@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -46,7 +47,7 @@ func TestSessionManagersCleaner(t *testing.T) {
 	// Note that the cleaner is only running every 5s
 	time.Sleep(7 * time.Second)
 	_, err = m.GetSessionData(sID)
-	if err != ErrSessionNotFound {
+	if !errors.Is(err, ErrSessionNotFound) {
 		t.Error("Session still in memory after 7 seconds")
 	}
 }
@@ -60,7 +61,7 @@ func TestSessionManagersCleanerAfterUpdate(t *testing.T) {
 
 	time.Sleep(3 * time.Second)
 
-	err = m.UpdateSessionData(sID, make(map[string]interface{}))
+	err = m.UpdateSessionData(sID, make(map[string]any))
 	if err != nil {
 		t.Error("Error UpdateSessionData:", err)
 	}
@@ -68,13 +69,13 @@ func TestSessionManagersCleanerAfterUpdate(t *testing.T) {
 	time.Sleep(3 * time.Second)
 
 	_, err = m.GetSessionData(sID)
-	if err == ErrSessionNotFound {
+	if errors.Is(err, ErrSessionNotFound) {
 		t.Error("Session not found although has been updated 3 seconds earlier.")
 	}
 
 	time.Sleep(4 * time.Second)
 	_, err = m.GetSessionData(sID)
-	if err != ErrSessionNotFound {
+	if !errors.Is(err, ErrSessionNotFound) {
 		t.Error("Session still in memory 7 seconds after update")
 	}
 }

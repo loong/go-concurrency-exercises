@@ -30,7 +30,7 @@ type SessionManager struct {
 
 // Session stores the session's data
 type Session struct {
-	Data map[string]interface{}
+	Data map[string]any
 }
 
 // NewSessionManager creates a new sessionManager
@@ -50,7 +50,7 @@ func (m *SessionManager) CreateSession() (string, error) {
 	}
 
 	m.sessions[sessionID] = Session{
-		Data: make(map[string]interface{}),
+		Data: make(map[string]any),
 	}
 
 	return sessionID, nil
@@ -62,7 +62,7 @@ var ErrSessionNotFound = errors.New("SessionID does not exists")
 
 // GetSessionData returns data related to session if sessionID is
 // found, errors otherwise
-func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{}, error) {
+func (m *SessionManager) GetSessionData(sessionID string) (map[string]any, error) {
 	session, ok := m.sessions[sessionID]
 	if !ok {
 		return nil, ErrSessionNotFound
@@ -71,7 +71,7 @@ func (m *SessionManager) GetSessionData(sessionID string) (map[string]interface{
 }
 
 // UpdateSessionData overwrites the old session data with the new one
-func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]interface{}) error {
+func (m *SessionManager) UpdateSessionData(sessionID string, data map[string]any) error {
 	_, ok := m.sessions[sessionID]
 	if !ok {
 		return ErrSessionNotFound
@@ -96,7 +96,7 @@ func main() {
 	log.Println("Created new session with ID", sID)
 
 	// Update session data
-	data := make(map[string]interface{})
+	data := make(map[string]any)
 	data["website"] = "longhoang.de"
 
 	err = m.UpdateSessionData(sID, data)
