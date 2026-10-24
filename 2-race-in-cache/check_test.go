@@ -35,15 +35,13 @@ func TestLRU(t *testing.T) {
 	cache := New(&loader)
 
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func(i int) {
+	for i := range 100 {
+		wg.Go(func() {
 			value := cache.Get("Test" + strconv.Itoa(i))
-			if value != "Test" + strconv.Itoa(i) {
+			if value != "Test"+strconv.Itoa(i) {
 				t.Errorf("Incorrect db response %v", value)
 			}
-			wg.Done()
-		}(i)
+		})
 	}
 	wg.Wait()
 
