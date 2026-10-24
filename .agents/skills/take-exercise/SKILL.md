@@ -26,7 +26,7 @@ Do not read other people's solutions from the web unless the user asks for a wor
 
 - Change **only** `<exercise>/main.go`.
 - Leave `*_test.go`, `mock*.go`, and `helper.go` untouched.
-- Keep `Crawl()` concurrent in exercise 0 (do not remove `go`).
+- Keep `Crawl()` concurrent in exercise 0 (do not serialize the recursive calls).
 - Do not add a nested `go.mod`.
 
 ## 3. Coaching loop

@@ -25,11 +25,11 @@ ok      github.com/loong/go-concurrency-exercises/0-limit-crawler  13.009s
 Incorrect solution:
 ```
 --- FAIL: TestMain (7.80s)
-        main_test.go:18: There exists a two crawls who were executed less than 1 sec apart.
-	        main_test.go:19: Solution is incorrect.
-		FAIL
-		exit status 1
-		FAIL    github.com/loong/go-concurrency-exercises/0-limit-crawler  7.808s
+        check_test.go:40: There exists a two crawls that were executed less than 1 second apart.
+        check_test.go:41: Solution is incorrect.
+        FAIL
+        exit status 1
+        FAIL    github.com/loong/go-concurrency-exercises/0-limit-crawler  7.808s
 ```
 
 Coding agents: see [`AGENTS.md`](./AGENTS.md) in this directory.

@@ -1,6 +1,6 @@
 # 0-limit-crawler
 
-Limit crawls to **at most one page per second** while still calling `Crawl()` concurrently. Do not remove the `go` keyword.
+Limit crawls to **at most one page per second** while still calling `Crawl()` concurrently. Keep the recursive `Crawl` calls concurrent (do not serialize them).
 
 ## Files
 
