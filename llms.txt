@@ -23,4 +23,4 @@ Module: `github.com/loong/go-concurrency-exercises`. Covers goroutines, channels
 ## Optional
 
 - [Human README](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/README.md): How humans take the challenge
-- [Go module](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/go.mod): `go 1.19`, module path `github.com/loong/go-concurrency-exercises`
+- [Go module](https://raw.githubusercontent.com/loong/go-concurrency-exercises/main/go.mod): `go 1.27`, module path `github.com/loong/go-concurrency-exercises`

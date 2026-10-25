@@ -6,7 +6,10 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 // MockFetcher is Fetcher that returns canned results. Taken from
 // https://tour.golang.org/concurrency/10
@@ -28,14 +31,14 @@ func (f MockFetcher) Fetch(url string) (string, []string, error) {
 
 // fetcher is a populated MockFetcher.
 var fetcher = MockFetcher{
-	"http://golang.org/": &mockResult{
+	"http://golang.org/": {
 		"The Go Programming Language",
 		[]string{
 			"http://golang.org/pkg/",
 			"http://golang.org/cmd/",
 		},
 	},
-	"http://golang.org/pkg/": &mockResult{
+	"http://golang.org/pkg/": {
 		"Packages",
 		[]string{
 			"http://golang.org/",
@@ -44,14 +47,14 @@ var fetcher = MockFetcher{
 			"http://golang.org/pkg/os/",
 		},
 	},
-	"http://golang.org/pkg/fmt/": &mockResult{
+	"http://golang.org/pkg/fmt/": {
 		"Package fmt",
 		[]string{
 			"http://golang.org/",
 			"http://golang.org/pkg/",
 		},
 	},
-	"http://golang.org/pkg/os/": &mockResult{
+	"http://golang.org/pkg/os/": {
 		"Package os",
 		[]string{
 			"http://golang.org/",
@@ -65,13 +68,12 @@ var fetcher = MockFetcher{
 // not
 
 // fetchSignal is used to test whether the solution is correct
-var fetchSignal chan bool
+var fetchSignal = sync.OnceValue(func() chan bool {
+	// Use buffered channel to avoid blocking
+	return make(chan bool, 1000)
+})
 
 // fetchSignalInstance is a singleton to access fetchSignal
 func fetchSignalInstance() chan bool {
-	if fetchSignal == nil {
-		// Use buffered channel to avoid blocking
-		fetchSignal = make(chan bool, 1000)
-	}
-	return fetchSignal
+	return fetchSignal()
 }

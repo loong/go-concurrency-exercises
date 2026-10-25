@@ -12,27 +12,25 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
-
 // RunMockServer pretends to be a video processing service. It
 // simulates user interacting with the Server.
 func RunMockServer() {
+	var wg sync.WaitGroup
+
 	u1 := User{ID: 0, IsPremium: false}
 	u2 := User{ID: 1, IsPremium: true}
 
-	wg.Add(5)
-
-	go createMockRequest(1, shortProcess, &u1)
+	wg.Go(func() { createMockRequest(1, shortProcess, &u1) })
 	time.Sleep(1 * time.Second)
 
-	go createMockRequest(2, longProcess, &u2)
+	wg.Go(func() { createMockRequest(2, longProcess, &u2) })
 	time.Sleep(2 * time.Second)
 
-	go createMockRequest(3, shortProcess, &u1)
+	wg.Go(func() { createMockRequest(3, shortProcess, &u1) })
 	time.Sleep(1 * time.Second)
 
-	go createMockRequest(4, longProcess, &u1)
-	go createMockRequest(5, shortProcess, &u2)
+	wg.Go(func() { createMockRequest(4, longProcess, &u1) })
+	wg.Go(func() { createMockRequest(5, shortProcess, &u2) })
 
 	wg.Wait()
 }
@@ -46,8 +44,6 @@ func createMockRequest(pid int, fn func(), u *User) {
 	} else {
 		fmt.Println("UserID:", u.ID, "\tProcess", pid, "killed. (No quota left)")
 	}
-
-	wg.Done()
 }
 
 func shortProcess() {

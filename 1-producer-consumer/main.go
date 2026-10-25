@@ -9,6 +9,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -16,7 +17,7 @@ import (
 func producer(stream Stream) (tweets []*Tweet) {
 	for {
 		tweet, err := stream.Next()
-		if err == ErrEOF {
+		if errors.Is(err, ErrEOF) {
 			return tweets
 		}
 

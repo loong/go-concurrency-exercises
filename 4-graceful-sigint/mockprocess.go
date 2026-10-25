@@ -15,7 +15,7 @@ import (
 
 // MockProcess for example
 type MockProcess struct {
-	mu sync.Mutex
+	mu        sync.Mutex
 	isRunning bool
 }
 
